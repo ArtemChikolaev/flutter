@@ -1,0 +1,22 @@
+name: BoxShadow interpolation tests
+on:
+  push:
+    branches: [checks/box-shadow-lerp-endpoints]
+permissions:
+  contents: read
+jobs:
+  painting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: 1ce27df93f92541023ab127a5aaf4a5ed18b8217
+          fetch-depth: 2
+          persist-credentials: false
+      - run: ./bin/flutter --version
+      - name: Run painting tests
+        working-directory: packages/flutter
+        run: ../../bin/flutter test --reporter expanded test/painting/box_painter_test.dart
+      - name: Check formatting
+        run: ./bin/dart format --output=none --set-exit-if-changed packages/flutter/lib/src/painting/box_shadow.dart packages/flutter/test/painting/box_painter_test.dart
