@@ -11,24 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
-          ref: 1ce27df93f92541023ab127a5aaf4a5ed18b8217
+          ref: cce6a7843fd6710feccf9eb0bcbbf810060c4a10
           fetch-depth: 2
           persist-credentials: false
       - name: Fetch upstream release tags for Flutter SDK version detection
         run: git fetch --unshallow --filter=tree:0 --tags https://github.com/flutter/flutter.git master
       - run: ./bin/flutter --version
-      - name: Reproduce the regression on the base revision
+      - name: Verify the new null-endpoint test fails before the change
         working-directory: packages/flutter
         run: |
           file=lib/src/painting/box_shadow.dart
           git show HEAD^:packages/flutter/$file > "$file"
           trap 'git restore -- "$file"' EXIT
-          if ../../bin/flutter test --reporter expanded --plain-name 'BoxShadow.lerp preserves the blur style at each endpoint' test/painting/box_painter_test.dart > "$RUNNER_TEMP/before.log" 2>&1; then
+          if ../../bin/flutter test --reporter expanded --plain-name 'BoxShadow.lerp handles a null shadow at either endpoint' test/painting/box_painter_test.dart > "$RUNNER_TEMP/before.log" 2>&1; then
             cat "$RUNNER_TEMP/before.log"
             exit 1
           fi
           cat "$RUNNER_TEMP/before.log"
-          grep -E 'Actual: .*BlurStyle.solid' "$RUNNER_TEMP/before.log"
+          grep -Ei 'Expected: .*same instance|Expected: .*same object' "$RUNNER_TEMP/before.log"
       - name: Run painting tests
         working-directory: packages/flutter
         run: ../../bin/flutter test --reporter expanded test/painting/box_painter_test.dart
