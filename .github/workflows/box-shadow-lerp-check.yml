@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
-          ref: cce6a7843fd6710feccf9eb0bcbbf810060c4a10
+          ref: 5ac9eaf59b957cd732df4885e6f4cbb219601b78
           fetch-depth: 2
           persist-credentials: false
       - name: Fetch upstream release tags for Flutter SDK version detection
@@ -21,7 +21,7 @@ jobs:
         working-directory: packages/flutter
         run: |
           file=lib/src/painting/box_shadow.dart
-          git show HEAD^:packages/flutter/$file > "$file"
+          git show a1260c8441f420b5f9f254cbccb801eb922dcfdc:packages/flutter/$file > "$file"
           trap 'git restore -- "$file"' EXIT
           if ../../bin/flutter test --reporter expanded --plain-name 'BoxShadow.lerp handles a null shadow at either endpoint' test/painting/box_painter_test.dart > "$RUNNER_TEMP/before.log" 2>&1; then
             cat "$RUNNER_TEMP/before.log"
